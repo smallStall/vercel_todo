@@ -1,5 +1,5 @@
 {
-  "name": "nextjs_vercel",
+  "name": "vercel_todo",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,10 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
+    "@mui/material": "^5.9.2",
     "@supabase/supabase-js": "^1.35.4",
     "next": "12.2.3",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.34.0",
+    "react-toastify": "^9.0.7"
   },
   "devDependencies": {
     "@types/node": "18.6.2",
