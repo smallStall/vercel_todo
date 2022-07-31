@@ -1,7 +1,10 @@
-import { Button, Container, Stack, TextField } from "@mui/material";
+import { Button, Container, TextField, Typography } from "@mui/material";
+import FormControl from "@mui/material/FormControl";
 import { SubmitHandler, useForm } from "react-hook-form";
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { schema } from "../schema/signupSchema";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 /**
  * ユーザー登録フォームのデータ型
@@ -14,35 +17,9 @@ interface FormInput {
   confirmPassword: string;
 }
 
-/**
- * yupによるバリデーションのスキーマ
- */
-const schema = yup.object({
-  email: yup
-    .string()
-    .required("メールアドレスを入力してください。")
-    .email("正しいメールアドレスを入力してください。"),
-  handleName: yup.string().required("ハンドルネームは必須です。"),
-  password: yup
-    .string()
-    .required("パスワードを入力してください。")
-    .min(8, "パスワードは8文字以上必要です")
-    .matches(/^([A-Za-z0-9]+)$/, "パスワードに使える文字は半角英数字のみです。")
-    .matches(
-      /[A-Za-z]+/,
-      "パスワードには１文字以上アルファベットを入れてください。"
-    )
-    .matches(/\d+/, "パスワードには１文字以上数字を入れてください。"),
-  confirmPassword: yup
-    .string()
-    .required("パスワードの確認を入力してください。")
-    .oneOf(
-      [yup.ref("password"), null],
-      "パスワードとパスワードの確認が一致しません。ご確認ください。"
-    ),
-});
-
 export default function SignupForm() {
+  const router = useRouter();
+  const [serverError, setServerError] = useState("");
   const {
     register,
     handleSubmit,
@@ -51,14 +28,27 @@ export default function SignupForm() {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<FormInput> = (data) => {
-    console.log(data);
+  //フロント側のvalidationが通ったら実行されるコード
+  const onSubmit: SubmitHandler<FormInput> = async (data) => {
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: new Headers({ "Content-Type": "application/json" }),
+      body: JSON.stringify(data),
+    });
+    if (res.status === 200) {
+      router.replace("/auth/sentmail");
+    } else {
+      const { error } = await res.json();
+      console.log(error);
+      setServerError(error);
+    }
   };
   return (
     <>
       <Container maxWidth="sm" sx={{ pt: 5 }}>
-        <Stack spacing={3}>
+        <FormControl fullWidth={true} sx={{ display: "grid", gap: "1em" }}>
           <TextField
+            defaultValue="a"
             required
             label="ハンドルネーム"
             error={"handleName" in errors}
@@ -72,6 +62,7 @@ export default function SignupForm() {
           />
           <TextField
             required
+            defaultValue="gmail.com"
             label="メールアドレス"
             type="email"
             error={"email" in errors}
@@ -102,7 +93,8 @@ export default function SignupForm() {
           >
             作成
           </Button>
-        </Stack>
+          <Typography>{serverError}</Typography>
+        </FormControl>
       </Container>{" "}
     </>
   );
