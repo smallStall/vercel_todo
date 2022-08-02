@@ -1,11 +1,14 @@
-import { Typography, Container } from "@mui/material";
+import { Typography, Container, Stack } from "@mui/material";
 
 export default function SentMail() {
   return (
     <Container maxWidth="sm" sx={{ pt: 5 }}>
-      <Typography>
-        ご入力いただいたメールアドレスにメールを送信しました。
-      </Typography>
+      <Stack alignItems="center">
+        <Typography sx={{ fontSize: "5em" }}>📨</Typography>
+        <Typography>
+          ご入力いただいたメールアドレスにメールを送信しました。
+        </Typography>
+      </Stack>
     </Container>
   );
-};
+}

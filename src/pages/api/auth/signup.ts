@@ -1,12 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { supabaseServer } from "../../../libs/supabaseServer";
 import { SchemaOf } from "yup";
-import { schema } from "../../../schema/signupSchema";
+import { signupSchema } from "../../../schema/signupSchema";
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.body) {
-    if ((await validation(schema, req.body)).isValid) {
+    if ((await validation(signupSchema, req.body)).isValid) {
       const { user, error } = await supabaseServer.auth.signUp({ email: req.body.email, password: req.body.password })
       if (!user || error) {
         console.error("supabase signUpエラー")
