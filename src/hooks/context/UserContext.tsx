@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { supabaseClient } from "../../libs/supabaseClient";
+import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 
 
 type UserContextType = {

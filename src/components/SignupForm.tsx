@@ -19,7 +19,7 @@ interface FormInput {
 
 export default function SignupForm() {
   const router = useRouter();
-  const [serverError, setServerError] = useState("");
+  const [message, setMessage] = useState("");
   const {
     register,
     handleSubmit,
@@ -30,25 +30,27 @@ export default function SignupForm() {
 
   //フロント側のvalidationが通ったら実行されるコード
   const onSubmit: SubmitHandler<FormInput> = async (data) => {
+    setMessage("データを送信中です。")
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: new Headers({ "Content-Type": "application/json" }),
       body: JSON.stringify(data),
     });
     if (res.status === 200) {
+      setMessage("");
       router.replace("/auth/sentmail");
     } else {
       const { error } = await res.json();
       console.log(error);
-      setServerError(error);
-    }
+      setMessage(error);
+    };
   };
   return (
     <>
       <Container maxWidth="sm" sx={{ pt: 5 }}>
+        <Typography variant="h1">ご登録はこちら</Typography>
         <FormControl fullWidth={true} sx={{ display: "grid", gap: "1.1em" }}>
           <TextField
-            defaultValue="a"
             required
             label="ハンドルネーム"
             error={"handleName" in errors}
@@ -93,7 +95,7 @@ export default function SignupForm() {
           >
             作成
           </Button>
-          <Typography>{serverError}</Typography>
+          <Typography>{message}</Typography>
         </FormControl>
       </Container>{" "}
     </>

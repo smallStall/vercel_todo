@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { supabaseServer } from "../../../libs/supabaseServer";
+import { supabaseServerClient } from "@supabase/auth-helpers-nextjs"; //https://github.com/supabase-community/auth-helpers/blob/main/packages/nextjs/src/utils/supabaseServerClient.ts
 import { SchemaOf } from "yup";
 import { signupSchema } from "../../../schema/signupSchema";
 
@@ -7,7 +7,7 @@ import { signupSchema } from "../../../schema/signupSchema";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.body) {
     if ((await validation(signupSchema, req.body)).isValid) {
-      const { user, error } = await supabaseServer.auth.signUp({ email: req.body.email, password: req.body.password })
+      const { user, error } = await supabaseServerClient({ req }).auth.signUp({ email: req.body.email, password: req.body.password })
       if (!user || error) {
         console.error("supabase signUpエラー")
         return res.status(401).send({ error: 'ユーザー登録できません。すでに登録していませんか？' });
@@ -19,7 +19,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).send({ error: 'ブラウザのJavaScriptを有効にしてください。' });
     }
   }
-  //supabaseClient.auth.api.setAuthCookie(req, res);
 }
 
 //yup schemaの流用

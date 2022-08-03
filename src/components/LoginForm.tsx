@@ -1,7 +1,7 @@
 import { Button, Container, TextField, Typography } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { supabaseClient } from "../libs/supabaseClient";
+import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "../schema/loginSchema";
 import { useRouter } from "next/router";
@@ -18,7 +18,7 @@ interface FormInput {
 
 export default function LoginForm() {
   const router = useRouter();
-  const [loginError, setLoginError] = useState("");
+  const [message, setMessage] = useState("");
   const {
     register,
     handleSubmit,
@@ -31,21 +31,23 @@ export default function LoginForm() {
   //signUpと違い、こちらはテーブルを書き換えることはないため、
   //クライアント側からsupabaseを呼び出すことにしました。
   const onSubmit: SubmitHandler<FormInput> = async (data) => {
-    const {error} = await supabaseClient.auth.api.signInWithEmail(data.email, data.password);
+    setMessage("データを送信中です。")
+    const { error } = await supabaseClient.auth.signIn({
+      email: data.email,
+      password: data.password,
+    });
     if (error) {
-      setLoginError(error.message);
-    } else {
-      router.replace("/auth/todo");
+      setMessage(error.message);
     }
+    setMessage("");
   };
   return (
     <>
       <Container maxWidth="sm" sx={{ pt: 5 }}>
         <FormControl fullWidth={true} sx={{ display: "grid", gap: "1.1em" }}>
-          <Typography variant='h1'>ログインはこちら</Typography>
+          <Typography variant="h1">ログインはこちら</Typography>
           <TextField
             required
-            defaultValue="gmail.com"
             label="メールアドレス"
             type="email"
             error={"email" in errors}
@@ -68,7 +70,7 @@ export default function LoginForm() {
           >
             ログイン
           </Button>
-          <Typography>{loginError}</Typography>
+          <Typography>{message}</Typography>
         </FormControl>
       </Container>{" "}
     </>

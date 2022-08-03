@@ -1,8 +1,16 @@
 import Head from "next/head";
 import LoginForm from "../../components/LoginForm";
+import { Typography } from "@mui/material";
+import { useUser } from '@supabase/auth-helpers-react';
 
-
-export default function Form() {
+export default function LoginPage() {
+  const {isLoading, user, error} = useUser();
+  if(isLoading){
+    <>
+      <Typography variant="h1">読み込み中</Typography>
+    </>
+  }
+  if(!user)
   return (
     <>
       <Head>
@@ -12,4 +20,9 @@ export default function Form() {
       < LoginForm />
     </>
   );
+  return(
+    <Typography >
+    TODO
+  </Typography>
+  )
 }
