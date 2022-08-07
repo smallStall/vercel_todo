@@ -4,7 +4,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "../schema/loginSchema";
-import { useRouter } from "next/router";
 import { useState } from "react";
 
 /**
@@ -17,7 +16,6 @@ interface FormInput {
 }
 
 export default function LoginForm() {
-  const router = useRouter();
   const [message, setMessage] = useState("");
   const {
     register,
@@ -38,12 +36,15 @@ export default function LoginForm() {
     });
     if (error) {
       setMessage(error.message);
+    }else{
+      setMessage("");
     }
-    setMessage("");
   };
   return (
     <>
       <Container maxWidth="sm" sx={{ pt: 5 }}>
+        {// TODO Stackで実装するかどうか
+        }
         <FormControl fullWidth={true} sx={{ display: "grid", gap: "1.1em" }}>
           <Typography variant="h1">ログインはこちら</Typography>
           <TextField

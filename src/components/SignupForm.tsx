@@ -38,7 +38,7 @@ export default function SignupForm() {
     });
     if (res.status === 200) {
       setMessage("");
-      router.replace("/auth/sentmail");
+      router.replace("/sentmail");
     } else {
       const { error } = await res.json();
       console.log(error);
@@ -64,7 +64,6 @@ export default function SignupForm() {
           />
           <TextField
             required
-            defaultValue="gmail.com"
             label="メールアドレス"
             type="email"
             error={"email" in errors}
