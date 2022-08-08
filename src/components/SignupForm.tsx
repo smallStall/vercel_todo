@@ -5,6 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { signupSchema } from "../schema/signupSchema";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import NextLink from "next/link";
 
 /**
  * ユーザー登録フォームのデータ型
@@ -30,7 +31,7 @@ export default function SignupForm() {
 
   //フロント側のvalidationが通ったら実行されるコード
   const onSubmit: SubmitHandler<FormInput> = async (data) => {
-    setMessage("データを送信中です。")
+    setMessage("データを送信中です。");
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: new Headers({ "Content-Type": "application/json" }),
@@ -43,7 +44,7 @@ export default function SignupForm() {
       const { error } = await res.json();
       console.log(error);
       setMessage(error);
-    };
+    }
   };
   return (
     <>
@@ -96,6 +97,9 @@ export default function SignupForm() {
           </Button>
           <Typography>{message}</Typography>
         </FormControl>
+        <NextLink href="/login">
+          <Button>ログインはこちら</Button>
+        </NextLink>
       </Container>{" "}
     </>
   );

@@ -5,6 +5,7 @@ import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "../schema/loginSchema";
 import { useState } from "react";
+import NextLink from "next/link";
 
 /**
  * ユーザーログインフォームのデータ型
@@ -73,6 +74,10 @@ export default function LoginForm() {
           </Button>
           <Typography>{message}</Typography>
         </FormControl>
+        <NextLink href="/signup">
+          <Button>ご登録はこちら</Button>
+        </NextLink>
+
       </Container>{" "}
     </>
   );
