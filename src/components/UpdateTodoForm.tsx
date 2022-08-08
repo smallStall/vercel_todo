@@ -11,7 +11,7 @@ import FormControl from "@mui/material/FormControl";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { addTodoSchema } from "../schema/addTodoSchema";
+import { todoSchema } from "../schema/todoSchema";
 import { useState, useEffect } from "react";
 import { DeleteTodoDialog } from "./DeleteTodoDialog";
 import { Todo } from "../types/todos";
@@ -47,7 +47,7 @@ export function UpdateTodoForm({ onClose, todo, open }: Props) {
     handleSubmit,
     formState: { errors },
   } = useForm<FormInput>({
-    resolver: yupResolver(addTodoSchema),
+    resolver: yupResolver(todoSchema),
   });
 
   //フロント側のvalidationが通ったら実行されるコード

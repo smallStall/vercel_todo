@@ -3,7 +3,7 @@ import FormControl from "@mui/material/FormControl";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { addTodoSchema } from "../schema/addTodoSchema";
+import { todoSchema } from "../schema/todoSchema";
 import { useState, useRef } from "react";
 import { useUser } from "@supabase/auth-helpers-react";
 
@@ -31,7 +31,7 @@ export function InsertTodoForm({ onClose }: Props) {
     handleSubmit,
     formState: { errors },
   } = useForm<FormInput>({
-    resolver: yupResolver(addTodoSchema),
+    resolver: yupResolver(todoSchema),
   });
 
   //フロント側のvalidationが通ったら実行されるコード

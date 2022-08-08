@@ -3,7 +3,7 @@ import * as yup from "yup";
 /**
  * yupによるバリデーションのスキーマ
  */
-export const addTodoSchema = yup.object({
+export const todoSchema = yup.object({
   title: yup
     .string()
     .required("タイトルを入力してください。")
