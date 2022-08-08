@@ -1,5 +1,4 @@
-import { Button, Container, TextField, Typography } from "@mui/material";
-import FormControl from "@mui/material/FormControl";
+import { Button, Container, TextField, Typography, FormControl } from "@mui/material";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { yupResolver } from "@hookform/resolvers/yup";

@@ -1,6 +1,5 @@
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import { InsertTodoForm} from "./InsertTodoForm";
+import { Dialog, DialogTitle } from "@mui/material";
+import { InsertTodoForm } from "./InsertTodoForm";
 
 type Props = {
   open: boolean;
@@ -19,7 +18,7 @@ export const InsertTodoDialog = ({ open, onClose }: Props) => {
       fullWidth={true}
     >
       <DialogTitle>TODOを追加する</DialogTitle>
-      <InsertTodoForm onClose={onClose}/>
+      <InsertTodoForm onClose={onClose} />
     </Dialog>
   );
 };

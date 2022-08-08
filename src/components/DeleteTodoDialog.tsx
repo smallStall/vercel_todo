@@ -1,8 +1,4 @@
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import Button from "@mui/material/Button";
-import DialogActions from "@mui/material/DialogActions";
-import { Typography } from "@mui/material";
+import { Dialog, DialogTitle, Button, DialogActions } from "@mui/material";
 
 type Props = {
   open: boolean;

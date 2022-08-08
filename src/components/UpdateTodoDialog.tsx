@@ -1,5 +1,4 @@
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
+import { Dialog, DialogTitle } from "@mui/material";
 import { UpdateTodoForm } from "./UpdateTodoForm";
 import { Todo } from "../types/todos";
 
