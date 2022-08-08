@@ -1,6 +1,6 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
-import { theme } from "./theme";
+import { theme } from "../components/theme";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 /*
   セッション管理は間違えるとセキュリティ漏洩につながる部分のため、
