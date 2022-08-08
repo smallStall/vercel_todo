@@ -9,7 +9,14 @@ export const theme = createTheme({
     },
     h2: {
       fontSize: 30,
-      paddingBottom: 10
-    }
+      paddingBottom: 10,
+    },
+  },
+  components: {
+    MuiPaper: {
+      defaultProps: {
+        sx: { paddingTop: 5, paddingBottom: 5, paddingLeft: 3, paddingRight: 3 },
+      },
+    },
   },
 });

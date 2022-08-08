@@ -20,7 +20,7 @@ export const UpdateTodoDialog = ({ open, onClose, todo }: Props) => {
       maxWidth="sm"
       fullWidth={true}
     >
-      <DialogTitle>TODOを更新する</DialogTitle>
+      <DialogTitle>TODOを更新</DialogTitle>
       <UpdateTodoForm onClose={onClose} todo={todo} open={open} />
     </Dialog>
   );

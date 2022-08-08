@@ -12,7 +12,8 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { addTodoSchema } from "../schema/addTodoSchema";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { DeleteTodoDialog } from "./DeleteTodoDialog";
 import { Todo } from "../types/todos";
 /**
  * フォームのデータ型
@@ -37,6 +38,8 @@ export function UpdateTodoForm({ onClose, todo, open }: Props) {
   const [content, setContent] = useState(todo.content);
   const [expiration, setExpiration] = useState(todo.expiration);
   const [isCompleted, setIsCompleted] = useState(todo.is_completed);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
   const [message, setMessage] = useState("");
   const {
     setValue,
@@ -161,7 +164,9 @@ export function UpdateTodoForm({ onClose, todo, open }: Props) {
             variant="contained"
             color="warning"
             size="large"
-            onClick={handleSubmit(onSubmitUpdate)}
+            onClick={() => {
+              setIsDeleteOpen(true);
+            }}
           >
             削除
           </Button>
@@ -175,6 +180,22 @@ export function UpdateTodoForm({ onClose, todo, open }: Props) {
         </Box>
         <Typography>{message}</Typography>
       </FormControl>
+      <DeleteTodoDialog
+        open={isDeleteOpen}
+        onClose={async (isOK: boolean) => {
+          if (isOK) {
+            const { error } = await supabaseClient
+              .from("todos")
+              .delete()
+              .eq("id", id);
+            console.log(error);
+          }
+          setIsDeleteOpen(false);
+          if (isOK) {
+            onClose(true);
+          }
+        }}
+      />
     </Container>
   );
 }
