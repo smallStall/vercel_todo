@@ -4,7 +4,7 @@ import Checkbox from "@mui/material/Checkbox";
 import FormGroup from "@mui/material/FormGroup";
 import Button from "@mui/material/Button";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { Typography } from "@mui/material";
+import { Typography, TextField } from "@mui/material";
 import { useEffect, useState, useCallback } from "react";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import type { Todo } from "../types/todos";
@@ -18,6 +18,7 @@ import { useUser } from "@supabase/auth-helpers-react";
 export default function TodoTables() {
   const { user } = useUser();
   const [todos, setTodos] = useState<Todo[] | null>(null);
+  const [searchStr, setSearchStr] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isExpired, setIsExpired] = useState(false);
@@ -76,18 +77,33 @@ export default function TodoTables() {
     linkOperator: GridLinkOperator.And,
   };
 
-  const nonfilterModel: GridFilterModel = {
-    items: [],
+  const strfilterModel: GridFilterModel = {
+    items: [
+      {
+        columnField: "title",
+        operatorValue: "contains",
+        value: searchStr,
+      },
+    ],
   };
 
   return (
     <Box sx={{ height: 400, width: "90%", margin: "2% 5% 2% 5%" }}>
       <Typography variant="h1">TODOリスト</Typography>
+      <TextField
+        label="タスク検索"
+        sx={{ width: "18em" }}
+        onChange={(e) => {
+          setSearchStr(e.target.value);
+        }}
+      >
+        {searchStr}
+      </TextField>
       <FormGroup
         sx={{
           display: "grid",
           gridTemplateColumns: "180px 4fr minmax(130px, 1fr)",
-          margin: "0 20px 10px 20px",
+          margin: "20px 20px 10px 20px",
         }}
       >
         <FormControlLabel
@@ -128,7 +144,7 @@ export default function TodoTables() {
           NoResultsOverlay: NoResultsOverlay,
         }}
         loading={isLoading}
-        filterModel={isExpired ? filterModel : nonfilterModel}
+        filterModel={isExpired ? filterModel : strfilterModel}
         disableColumnFilter={true}
         onCellClick={(params) => {
           if (typeof params.id !== "string" || !user) {

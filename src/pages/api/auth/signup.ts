@@ -7,6 +7,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.body) {
     if ((await validationHelper(signupSchema, req.body)).isValid) {
       const { user, error } = await supabaseServerClient({ req }).auth.signUp({ email: req.body.email, password: req.body.password }, { data: { handle_name: req.body.handleName } });
+      /*
+      signUpがエラーなく終わるとsupabaseから確認メールが送られます。
+      ユーザー名は{{ .Data.handle_name }}とすればメールの本文やタイトルに入れ込むことができるようです。
+      */
       if (!user || error) {
         console.error("supabase signUpエラー")
         return res.status(401).send({ error: 'ユーザー登録できませんでした。' });
