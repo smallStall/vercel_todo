@@ -247,12 +247,12 @@ export interface definitions {
      * Format: timestamp without time zone
      * @default now()
      */
-    created_at: string;
+    created_at?: string;
     /**
      * Format: timestamp without time zone
      * @default now()
      */
-    updated_at: string;
+    updated_at?: string;
     /**
      * Format: boolean
      * @default false

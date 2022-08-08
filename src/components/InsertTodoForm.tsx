@@ -21,7 +21,7 @@ type Props = {
   onClose: (isOk: boolean) => void;
 };
 
-export function AddTodoForm({ onClose }: Props) {
+export function InsertTodoForm({ onClose }: Props) {
   const titleRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLInputElement>(null);
   const { user } = useUser();
@@ -38,6 +38,7 @@ export function AddTodoForm({ onClose }: Props) {
   const onSubmit: SubmitHandler<FormInput> = async (data) => {
     if (!user) return;
     setMessage("データを送信中です。");
+    data.expiration.setHours(9); //日にちがずれこむ可能性があるので進める
     const { error } = await supabaseClient.from("todos").insert(
       [
         {
@@ -49,13 +50,13 @@ export function AddTodoForm({ onClose }: Props) {
       ],
       { returning: "minimal" }
     );
-    if(error){
+    if (error) {
       setMessage(error.message);
       return;
     }
     setMessage("");
-    if(titleRef.current) titleRef.current.value= ""
-    if(contentRef.current) contentRef.current.value= ""
+    if (titleRef.current) titleRef.current.value = "";
+    if (contentRef.current) contentRef.current.value = "";
     onClose(true);
   };
 
@@ -82,13 +83,11 @@ export function AddTodoForm({ onClose }: Props) {
           {...register("content")}
         />
         <TextField
-          autoFocus={true}
           InputLabelProps={{ shrink: true }}
           label="期限"
-          defaultValue={null}
           required
           type="date"
-          error={"expiratio" in errors}
+          error={"expiration" in errors}
           helperText={
             errors.expiration?.message?.startsWith("expiration must be")
               ? "期限を入力してください。"

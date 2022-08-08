@@ -11,14 +11,19 @@ import type { Todo } from "../types/todos";
 import { NoRowsOverlay } from "../components/NoRowsOverlay";
 import { NoResultsOverlay } from "../components/NoResultsOverlay";
 import { columns } from "./config/gridConfig";
-import { AddTodoDialog } from "../components/AddTodoDialog";
+import { InsertTodoDialog } from "./InsertTodoDialog";
+import { UpdateTodoDialog } from "../components/UpdateTodoDialog";
+import { useUser } from "@supabase/auth-helpers-react";
 
 export default function TodoTables() {
+  const { user } = useUser();
   const [todos, setTodos] = useState<Todo[] | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isExpired, setIsExpired] = useState(false);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isInsertOpen, setIsInsertOpen] = useState(false);
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const [todo, setTodo] = useState<Todo | null>(null);
   const loadData = useCallback(async () => {
     setIsLoading(true);
     /*
@@ -58,7 +63,7 @@ export default function TodoTables() {
 
   useEffect(() => {
     loadData();
-  }, [loadData]);  // isCompleted（完了済を表示）が変更されるたびに実行
+  }, [loadData]); // isCompleted（完了済を表示）が変更されるたびに実行
 
   const filterModel: GridFilterModel = {
     items: [
@@ -105,7 +110,7 @@ export default function TodoTables() {
           }
           label="完了済を表示"
         />
-        <Button variant="contained" onClick={() => setIsAddDialogOpen(true)}>
+        <Button variant="contained" onClick={() => setIsInsertOpen(true)}>
           +タスク追加
         </Button>
       </FormGroup>
@@ -117,7 +122,6 @@ export default function TodoTables() {
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5]}
-        checkboxSelection
         disableSelectionOnClick
         components={{
           NoRowsOverlay: NoRowsOverlay,
@@ -126,16 +130,43 @@ export default function TodoTables() {
         loading={isLoading}
         filterModel={isExpired ? filterModel : nonfilterModel}
         disableColumnFilter={true}
+        onCellClick={(params) => {
+          if (typeof params.id !== "string" || !user) {
+            return;
+          }
+          const tempTodo: Todo = {
+            id: params.row.id,
+            title: params.row.title,
+            content: params.row.content,
+            user_id: user.id,
+            expiration: params.row.expiration,
+            is_completed: params.row.is_completed,
+          };
+          setTodo(tempTodo);
+          setIsUpdateOpen(true);
+        }}
       />
-      <AddTodoDialog
-        open={isAddDialogOpen}
-        onClose={(isOK) => {
-          setIsAddDialogOpen(false);
-          if(isOK){
+      <InsertTodoDialog
+        open={isInsertOpen}
+        onClose={(isOK: boolean) => {
+          setIsInsertOpen(false);
+          if (isOK) {
             loadData();
           }
         }}
       />
+      {todo ? (
+        <UpdateTodoDialog
+          open={isUpdateOpen}
+          todo={todo}
+          onClose={(isOK: boolean) => {
+            setIsUpdateOpen(false);
+            if (isOK) {
+              loadData();
+            }
+          }}
+        />
+      ) : null}
     </Box>
   );
 }
