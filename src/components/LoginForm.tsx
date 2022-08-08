@@ -27,7 +27,7 @@ export default function LoginForm() {
 
   //フロント側のvalidationが通ったら実行されるコード
   //signUpと違い、こちらはテーブルを書き換えることはないため、
-  //クライアント側からsupabaseを呼び出すことにしました。
+  //クライアント側から直接supabaseを呼び出すことにしました。
   const onSubmit: SubmitHandler<FormInput> = async (data) => {
     setMessage("データを送信中です。")
     const { error } = await supabaseClient.auth.signIn({

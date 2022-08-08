@@ -1,30 +1,27 @@
 import Box from "@mui/material/Box";
-import {
-  DataGrid,
-  GridFilterModel,
-  GridLinkOperator,
-} from "@mui/x-data-grid";
+import { DataGrid, GridFilterModel, GridLinkOperator } from "@mui/x-data-grid";
 import Checkbox from "@mui/material/Checkbox";
 import FormGroup from "@mui/material/FormGroup";
 import Button from "@mui/material/Button";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import type { Todo } from "../types/todos";
 import { NoRowsOverlay } from "../components/NoRowsOverlay";
 import { NoResultsOverlay } from "../components/NoResultsOverlay";
 import { columns } from "./config/gridConfig";
+import { AddTodoDialog } from "../components/AddTodoDialog";
 
 export default function TodoTables() {
   const [todos, setTodos] = useState<Todo[] | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isExpired, setIsExpired] = useState(false);
-  useEffect(() => {
-    async function loadData() {
-      setIsLoading(true);
-      /*
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    /*
       下記コードについて
       SupabaseではFirebaseと同様に、クライアント側から直接DBのデータを取得します。
       セキュリティルールはFirebaseと同様にホワイトリスト方式です。
@@ -33,27 +30,35 @@ export default function TodoTables() {
       Firebaseではドキュメントにread/writeを指定するのに対し、SupabaseではテーブルのCRUDに対しRow Level Security(RLS)を指定します。
       これはSQLのWHERE句を常時つけるようなイメージです。
       todosテーブルのRLSが有効になっているため、SELECTするだけでuserが絞られたtodosが返ってきます。
-      todoテーブルにはSELECTに対しauth.role()='authenticated'が設定されています。
-      そうすると、SELECTするたびに認証されたユーザーだけが行を取得できます。
+      todoテーブルにはSELECTに対しuid() = user_idが設定されています。
+      uid()はクライアントのユーザーIDを取得する関数で、user_idはユーザーIDが格納されているカラムです。
+      そうすると、SELECTするたびにuser_idがログインしているユーザーと等しい行だけを取得できます。
       */
-      const { data, error } = await supabaseClient
-        .from<Todo>("todos")
-        .select("*, users (handle_name)")
-        /*
+    const { data, error } = await supabaseClient
+      .from<Todo>("todos")
+      .select("*, users (handle_name)")
+      /*
         上記コードについて
         todosテーブルにはusersテーブルとのリレーションシップがあるため、
         select('users (handle_name)')によりusersテーブルのhandle列が自動的に取得できます。
         Postgrestより
         https://postgrest.org/en/stable/api.html#embedding-disambiguation
         */
-        .is("is_completed", isCompleted).order('expiration');
-      //完了済のタスクはかなりのデータ量になる可能性があるので、初めにフォームを読み込んだときには
-      //データを取得しないことにしました。
-      setTodos(data);
-      setIsLoading(false);
+      .is("is_completed", isCompleted)
+      .order("expiration");
+    if (error) {
+      console.error(error.details);
+      return;
     }
-    loadData();
+    //完了済のタスクはかなりのデータ量になる可能性があるので、初めにフォームを読み込んだときには
+    //データを取得しないことにしました。
+    setTodos(data);
+    setIsLoading(false);
   }, [isCompleted]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);  // isCompleted（完了済を表示）が変更されるたびに実行
 
   const filterModel: GridFilterModel = {
     items: [
@@ -72,7 +77,7 @@ export default function TodoTables() {
 
   return (
     <Box sx={{ height: 400, width: "90%", margin: "2% 5% 2% 5%" }}>
-      <Typography variant="h1">TODO</Typography>
+      <Typography variant="h1">TODOリスト</Typography>
       <FormGroup
         sx={{
           display: "grid",
@@ -100,7 +105,9 @@ export default function TodoTables() {
           }
           label="完了済を表示"
         />
-        <Button variant="contained">+タスク追加</Button>
+        <Button variant="contained" onClick={() => setIsAddDialogOpen(true)}>
+          +タスク追加
+        </Button>
       </FormGroup>
       <DataGrid
         //MUI DataGrid API
@@ -114,11 +121,20 @@ export default function TodoTables() {
         disableSelectionOnClick
         components={{
           NoRowsOverlay: NoRowsOverlay,
-          NoResultsOverlay: NoResultsOverlay
+          NoResultsOverlay: NoResultsOverlay,
         }}
         loading={isLoading}
         filterModel={isExpired ? filterModel : nonfilterModel}
         disableColumnFilter={true}
+      />
+      <AddTodoDialog
+        open={isAddDialogOpen}
+        onClose={(isOK) => {
+          setIsAddDialogOpen(false);
+          if(isOK){
+            loadData();
+          }
+        }}
       />
     </Box>
   );

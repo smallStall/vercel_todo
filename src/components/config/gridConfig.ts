@@ -45,6 +45,7 @@ export const columns: GridColDef[] = [
   {
     field: "title",
     headerName: "タスク",
+    type: "string",
     flex: 400,
   },
   {
